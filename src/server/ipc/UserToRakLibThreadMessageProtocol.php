@@ -89,12 +89,6 @@ final class UserToRakLibThreadMessageProtocol{
 	public const PACKET_UNBLOCK_ADDRESS = 0x06;
 
 	/*
-	 * RAW_FILTER payload:
-	 * byte[] (pattern)
-	 */
-	public const PACKET_RAW_FILTER = 0x07;
-
-	/*
 	 * No payload
 	 *
 	 * Sends the disconnect message, removes sessions correctly, closes sockets.

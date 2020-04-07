@@ -79,15 +79,6 @@ final class RakLibToUserThreadMessageProtocol{
 	public const PACKET_SET_OPTION = 0x05;
 
 	/*
-	 * RAW payload:
-	 * byte (address length)
-	 * byte[] (address from/to)
-	 * short (port)
-	 * byte[] (payload)
-	 */
-	public const PACKET_RAW = 0x06;
-
-	/*
 	 * REPORT_PING payload:
 	 * int32 (internal session ID)
 	 * int32 (measured latency in MS)

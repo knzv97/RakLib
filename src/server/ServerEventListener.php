@@ -40,13 +40,6 @@ interface ServerEventListener{
 	public function handleEncapsulated(int $sessionId, string $packet) : void;
 
 	/**
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
-	 */
-	public function handleRaw(string $address, int $port, string $payload) : void;
-
-	/**
 	 * @param int $sessionId
 	 * @param int $identifierACK
 	 */

@@ -82,9 +82,6 @@ final class UserToRakLibThreadMessageReceiver implements ServerEventSource{
 				$len = ord($packet[$offset++]);
 				$address = substr($packet, $offset, $len);
 				$server->unblockAddress($address);
-			}elseif($id === ITCProtocol::PACKET_RAW_FILTER){
-				$pattern = substr($packet, $offset);
-				$server->addRawPacketFilter($pattern);
 			}elseif($id === ITCProtocol::PACKET_SHUTDOWN){
 				$server->shutdown();
 			}

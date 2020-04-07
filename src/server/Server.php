@@ -35,7 +35,6 @@ use function get_class;
 use function max;
 use function microtime;
 use function ord;
-use function preg_match;
 use function serialize;
 use function strlen;
 use function time;
@@ -69,8 +68,8 @@ class Server implements ServerInterface{
 	/** @var Session[] */
 	protected $sessions = [];
 
-	/** @var UnconnectedMessageHandler */
-	protected $unconnectedMessageHandler;
+	/** @var UnconnectedMessageHandler[] */
+	protected $unconnectedMessageHandlers = [];
 	/** @var string */
 	protected $name = "";
 
@@ -89,9 +88,6 @@ class Server implements ServerInterface{
 	protected $block = [];
 	/** @var int[] string (address) => int (number of packets) */
 	protected $ipSec = [];
-
-	/** @var string[] regex filters used to block out unwanted raw packets */
-	protected $rawPacketFilters = [];
 
 	/** @var bool */
 	public $portChecking = false;
@@ -116,7 +112,10 @@ class Server implements ServerInterface{
 	/** @var ExceptionTraceCleaner */
 	private $traceCleaner;
 
-	public function __construct(int $serverId, \Logger $logger, Socket $socket, int $maxMtuSize, int $protocolVersion, ServerEventSource $eventSource, ServerEventListener $eventListener, ExceptionTraceCleaner $traceCleaner){
+	/**
+	 * @param UnconnectedMessageHandler[] $unconnectedPacketHandlers
+	 */
+	public function __construct(int $serverId, \Logger $logger, Socket $socket, int $maxMtuSize, int $protocolVersion, ServerEventSource $eventSource, ServerEventListener $eventListener, ExceptionTraceCleaner $traceCleaner, array $unconnectedPacketHandlers){
 		$this->serverId = $serverId;
 		$this->logger = $logger;
 		$this->socket = $socket;
@@ -128,7 +127,8 @@ class Server implements ServerInterface{
 
 		$this->startTimeMS = (int) (microtime(true) * 1000);
 
-		$this->unconnectedMessageHandler = new UnconnectedMessageHandler($this);
+		$this->unconnectedMessageHandlers = $unconnectedPacketHandlers;
+		$this->unconnectedMessageHandlers[] = new RakNetUnconnectedMessageHandler($this);
 
 		$this->reusableAddress = clone $this->socket->getBindAddress();
 	}
@@ -287,13 +287,11 @@ class Server implements ServerInterface{
 					$this->logger->debug("Ignored unconnected packet from $address due to session already opened (0x" . bin2hex($buffer[0]) . ")");
 				}
 			}elseif(!$this->shutdown){
-				if(!($handled = $this->unconnectedMessageHandler->handleRaw($buffer, $address))){
-					foreach($this->rawPacketFilters as $pattern){
-						if(preg_match($pattern, $buffer) > 0){
-							$handled = true;
-							$this->eventListener->handleRaw($address->ip, $address->port, $buffer);
-							break;
-						}
+				$handled = false;
+				foreach($this->unconnectedMessageHandlers as $handler){
+					if($handler->handleRaw($buffer, $address)){
+						$handled = true;
+						//we intentionally don't break here, to allow all handlers a chance to react consistently
 					}
 				}
 
@@ -389,10 +387,6 @@ class Server implements ServerInterface{
 	public function unblockAddress(string $address) : void{
 		unset($this->block[$address]);
 		$this->logger->debug("Unblocked $address");
-	}
-
-	public function addRawPacketFilter(string $regex) : void{
-		$this->rawPacketFilters[] = $regex;
 	}
 
 	public function shutdown() : void{

@@ -63,15 +63,6 @@ final class RakLibToUserThreadMessageSender implements ServerEventListener{
 		);
 	}
 
-	public function handleRaw(string $address, int $port, string $payload) : void{
-		$this->channel->write(
-			chr(ITCProtocol::PACKET_RAW) .
-			chr(strlen($address)) . $address .
-			Binary::writeShort($port) .
-			$payload
-		);
-	}
-
 	public function notifyACK(int $sessionId, int $identifierACK) : void{
 		$this->channel->write(
 			chr(ITCProtocol::PACKET_ACK_NOTIFICATION) .

@@ -74,10 +74,6 @@ class UserToRakLibThreadMessageSender implements ServerInterface{
 		$this->channel->write($buffer);
 	}
 
-	public function addRawPacketFilter(string $regex) : void{
-		$this->channel->write(chr(ITCProtocol::PACKET_RAW_FILTER) . $regex);
-	}
-
 	public function shutdown() : void{
 		$buffer = chr(ITCProtocol::PACKET_SHUTDOWN);
 		$this->channel->write($buffer);
