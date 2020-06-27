@@ -124,7 +124,7 @@ class RakLibServer extends \Thread{
 		}
 
 		$this->protocolVersion = $overrideProtocolVersion ?? RakLib::DEFAULT_PROTOCOL_VERSION;
-		$this->supportedProtocols = $supportedProtocols ?? [$this->protocolVersion];
+		$this->supportedProtocols = (array) ($supportedProtocols ?? [$this->protocolVersion]);
 
 		$this->mainThreadNotifier = $sleeper;
 	}
