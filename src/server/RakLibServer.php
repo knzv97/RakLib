@@ -99,6 +99,7 @@ class RakLibServer extends \Thread{
 	 * @param InternetAddress      $address
 	 * @param int                  $maxMtuSize
 	 * @param int|null             $overrideProtocolVersion Optional custom protocol version to use, defaults to current RakLib's protocol
+	 * @param int[]|null           $supportedProtocols
 	 * @param SleeperNotifier|null $sleeper
 	 */
 	public function __construct(\ThreadedLogger $logger, string $autoloaderPath, InternetAddress $address, int $maxMtuSize = 1492, ?int $overrideProtocolVersion = null, ?array $supportedProtocols = null, ?SleeperNotifier $sleeper = null){
@@ -148,6 +149,9 @@ class RakLibServer extends \Thread{
 		return $this->protocolVersion;
 	}
 
+	/**
+	 * @return int[]
+	 */
 	public function getSupportedProtocols() : array{
 		return $this->supportedProtocols;
 	}

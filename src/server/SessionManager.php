@@ -144,6 +144,9 @@ class SessionManager{
 		return $this->server->getProtocolVersion();
 	}
 
+	/**
+	 * @return int[]
+	 */
 	public function getSupportedProtocols() : array{
 		return $this->server->getSupportedProtocols();
 	}
