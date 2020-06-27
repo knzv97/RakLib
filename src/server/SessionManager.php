@@ -144,6 +144,10 @@ class SessionManager{
 		return $this->server->getProtocolVersion();
 	}
 
+	public function getSupportedProtocols() : array{
+		return $this->server->getSupportedProtocols();
+	}
+
 	public function getLogger() : \ThreadedLogger{
 		return $this->server->getLogger();
 	}
